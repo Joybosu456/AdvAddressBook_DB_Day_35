@@ -28,104 +28,41 @@ namespace AdvAddressBook_ADO.NET
             }
         }
 
-        public bool addNewContactToDataBase(AddressBookModel addressBookModel)
+        public void personBelongingCityOrState()
         {
             try
             {
+                AddressBookModel addressBookModel = new AddressBookModel();
                 using (this.connection)
                 {
-                    SqlCommand cmd = new SqlCommand("SpAddAddressBookDetails", this.connection);
-                    //setting command type as stored procedure
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@FirstName", addressBookModel.FirstName);
-                    cmd.Parameters.AddWithValue("@LastName", addressBookModel.LastName);
-                    cmd.Parameters.AddWithValue("@Address", addressBookModel.Address);
-                    cmd.Parameters.AddWithValue("@City", addressBookModel.City);
-                    cmd.Parameters.AddWithValue("@State", addressBookModel.State);
-                    cmd.Parameters.AddWithValue("@Zip", addressBookModel.Zip);
-                    cmd.Parameters.AddWithValue("@PhoneNumber", addressBookModel.PhoneNumber);
-                    cmd.Parameters.AddWithValue("@Email", addressBookModel.Email);
-                    cmd.Parameters.AddWithValue("@AddressBookName", addressBookModel.AddressBookName);
-                    cmd.Parameters.AddWithValue("@AddressBookType", addressBookModel.AddressBookType);
-                    this.connection.Open();
-                    //Return the number of rows updated
-                    var result = cmd.ExecuteNonQuery();
-                    this.connection.Close();
-                    if (result != 0)
-                    {
-                        return true;
-                    }
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-            finally
-            {
-                this.connection.Close();
-            }
-        }
-
-        public bool EditExiContactToDataBase(AddressBookModel addressBookModel, string firstName)
-        {
-            try
-            {
-                using (this.connection)
-                {
-                    string query = @"update AddressBook_Table set lastname=@LastName,address=@Address,city=@City,
-                    state=@State,zip=@Zip,phonenumber=@PhoneNumber,email=@Email,addressbookname=@AddressBookName,
-                    addressbooktype=@AddressBookType  where FirstName=@firstName";
+                    string query = @"select * from AddressBook_Table where city='mumbai' Or state='andhra';";
                     SqlCommand cmd = new SqlCommand(query, this.connection);
-                    cmd.Parameters.AddWithValue("@FirstName", firstName);
-                    cmd.Parameters.AddWithValue("@LastName", addressBookModel.LastName);
-                    cmd.Parameters.AddWithValue("@Address", addressBookModel.Address);
-                    cmd.Parameters.AddWithValue("@City", addressBookModel.City);
-                    cmd.Parameters.AddWithValue("@State", addressBookModel.State);
-                    cmd.Parameters.AddWithValue("@Zip", addressBookModel.Zip);
-                    cmd.Parameters.AddWithValue("@PhoneNumber", addressBookModel.PhoneNumber);
-                    cmd.Parameters.AddWithValue("@Email", addressBookModel.Email);
-                    cmd.Parameters.AddWithValue("@AddressBookName", addressBookModel.AddressBookName);
-                    cmd.Parameters.AddWithValue("@AddressBookType", addressBookModel.AddressBookType);
                     this.connection.Open();
-                    var result = cmd.ExecuteNonQuery();
-                    this.connection.Close();
-                    if (result != 0)
+                    SqlDataReader sqlDataReader = cmd.ExecuteReader();
+                    if (sqlDataReader.HasRows)
                     {
-                        return true;
+                        while (sqlDataReader.Read())
+                        {
+                            addressBookModel.FirstName = sqlDataReader.GetString(0); ;
+                            addressBookModel.LastName = sqlDataReader.GetString(1);
+                            addressBookModel.Address = sqlDataReader.GetString(2);
+                            addressBookModel.City = sqlDataReader.GetString(3);
+                            addressBookModel.State = sqlDataReader.GetString(4);
+                            addressBookModel.Zip = sqlDataReader.GetInt64(5);
+                            addressBookModel.PhoneNumber = sqlDataReader.GetInt64(6);
+                            addressBookModel.Email = sqlDataReader.GetString(7);
+                            addressBookModel.AddressBookName = sqlDataReader.GetString(8);
+                            addressBookModel.AddressBookType = sqlDataReader.GetString(9);
+                            Console.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}", addressBookModel.FirstName, addressBookModel.LastName, addressBookModel.Address, addressBookModel.City, addressBookModel.State, addressBookModel.Zip, addressBookModel.PhoneNumber, addressBookModel.Email, addressBookModel.AddressBookName, addressBookModel.AddressBookType);
+                            Console.WriteLine("\n");
+                        }
                     }
-                    return false;
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-            finally
-            {
-                this.connection.Close();
-            }
-        }
-
-
-        public bool deleteExiContactInDataBase(string firstName)
-        {
-            try
-            {
-                using (this.connection)
-                {
-                    SqlCommand cmd = new SqlCommand("SpAddAddressBookDetailsForDelete", this.connection);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@FirstName", firstName);
-                    this.connection.Open();
-                    var result = cmd.ExecuteNonQuery();
-                    this.connection.Close();
-                    if (result != 0)
+                    else
                     {
-                        return true;
+                        Console.WriteLine("No Data Found");
                     }
-                    return false;
+                    sqlDataReader.Close();
+                    this.connection.Close();
                 }
             }
             catch (Exception e)
