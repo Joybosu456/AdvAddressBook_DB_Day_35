@@ -235,50 +235,6 @@ namespace AdvAddressBook_ADO.NET
                 this.connection.Close();
             }
         }
-        public void CountByCityAndState()
-        {
-            try
-            {
-                AddressBookModel addressBookModel = new AddressBookModel();
-                using (this.connection)
-                {
-                    using (SqlCommand command = new SqlCommand(
-                        @"select COUNT(*) as CityCount, City from AddressBook_Table group by City;
-                        select COUNT(*) as StateCount, State from AddressBook_Table group by State;; ", connection))
-                    {
-                        this.connection.Open();
-                        using (SqlDataReader sqlDataReader = command.ExecuteReader())
-                        {
-                            while (sqlDataReader.Read())
-                            {
-                                addressBookModel.City = sqlDataReader.GetString(0);
-                                int countCIty = sqlDataReader.GetInt32(1);
-                                Console.WriteLine("{0},{1}", addressBookModel.City, countCIty);
-                                Console.WriteLine("\n");
-                            }
-                            if (sqlDataReader.NextResult())
-                            {
-                                while (sqlDataReader.Read())
-                                {
-                                    addressBookModel.State = sqlDataReader.GetString(0);
-                                    int stateCount = sqlDataReader.GetInt32(1);
-                                    Console.WriteLine("{0},{1}", addressBookModel.State, stateCount);
-                                    Console.WriteLine("\n");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-            finally
-            {
-                this.connection.Close();
-            }
-        }
 
         // sorted Alphabetically By First Name.
         public void sortedAlphabeticallyByFirstName()
@@ -327,6 +283,37 @@ namespace AdvAddressBook_ADO.NET
                 this.connection.Close();
             }
         }
+
+        // Identify AddressBook With Name And Type.
+        public bool identifyAddressBookWithNameAndType(string firstName, string addressType, string adressName)
+        {
+            try
+            {
+                using (this.connection)
+                {
+                    string query = @"update AddressBook_Table set AddressBookName=@AddressBookName , AddressBookType=@AddressBookType where FirstName=@FirstName;";
+                    SqlCommand cmd = new SqlCommand(query, this.connection);
+                    cmd.Parameters.AddWithValue("@FirstName", firstName);
+                    cmd.Parameters.AddWithValue("@AddressBookType", addressType);
+                    cmd.Parameters.AddWithValue("@AddressBookName", adressName);
+                    this.connection.Open();
+                    var result = cmd.ExecuteNonQuery();
+                    this.connection.Close();
+                    if (result != 0)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                this.connection.Close();
+            }
+        }
     }
 }
- 
