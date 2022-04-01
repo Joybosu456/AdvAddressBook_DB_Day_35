@@ -20,11 +20,11 @@ namespace AdvAddressBook_ADO.NET
             addressBookModel.Email = "poonam@gmail.com";
             addressBookModel.AddressBookName = "friend address book";
             addressBookModel.AddressBookType = "Friend";
-            //addressBookRepo.DataBaseConnection();
-            //addressBookRepo.addNewContactToDataBase(addressBookModel);
-            //addressBookRepo.EditExiContactToDataBase(addressBookModel, "poonam");
-            //addressBookRepo.deleteExiContactInDataBase("Diksha");
-            //addressBookRepo.personBelongingCityOrState();
+            addressBookRepo.DataBaseConnection();
+            addressBookRepo.addNewContactToDataBase(addressBookModel);
+            addressBookRepo.EditExiContactToDataBase(addressBookModel, "poonam");
+            addressBookRepo.deleteExiContactInDataBase("Diksha");
+            addressBookRepo.personBelongingCityOrState();
         }
     }
 }
